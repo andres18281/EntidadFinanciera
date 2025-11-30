@@ -1,11 +1,14 @@
 package com.example.demo.port.in;
 
 
-import com.example.demo.entity.Cuenta;
 import java.util.List;
 
+import com.example.demo.dto.CrearCuentaRequest;
+import com.example.demo.dto.CuentaResponse;
+
+
 public interface CuentaUseCase {
-    Cuenta createCuenta(Cuenta cuenta);
-    List<Cuenta> getCuentasByClienteId(Long clienteId);
-    void actualizarSaldo(Long cuentaId, double monto);
+	 CuentaResponse createCuenta(CrearCuentaRequest request);
+	 List<CuentaResponse> getCuentasByClienteId(Long clienteId);
+	 void actualizarSaldo(Long cuentaId, double monto);
 }

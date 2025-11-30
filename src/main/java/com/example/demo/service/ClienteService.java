@@ -3,36 +3,56 @@ package com.example.demo.service;
 import org.springframework.stereotype.Service;
 import com.example.demo.port.in.ClienteUseCase;
 import com.example.demo.port.out.ClienteRepositoryPort;
+
+import lombok.RequiredArgsConstructor;
+
+import com.example.demo.dto.CrearClienteRequest;
 import com.example.demo.entity.Cliente;
+import com.example.demo.mapper.ClienteMapper;
+
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
-public class ClienteService implements ClienteUseCase {
+@RequiredArgsConstructor
+public class ClienteService {
 
     private final ClienteRepositoryPort clienteRepositoryPort;
 
-    public ClienteService(ClienteRepositoryPort clienteRepositoryPort) {
-        this.clienteRepositoryPort = clienteRepositoryPort;
-    }
+    // Crear un nuevo cliente
+    public Cliente createCliente(CrearClienteRequest request) {
+        if (clienteRepositoryPort.existsByNumeroIdentificacion(request.getNumeroIdentificacion())) {
+            throw new RuntimeException("Cliente con esa identificación ya existe");
+        }
 
-    @Override
-    public Cliente createCliente(Cliente cliente) {
+        Cliente cliente = ClienteMapper.toEntity(request);
+        cliente.setFechaCreacion(LocalDate.now());
         return clienteRepositoryPort.save(cliente);
     }
 
-    @Override
-    public List<Cliente> getAllClientes() {
-        return clienteRepositoryPort.findAll();
+    // Obtener cliente por ID
+    public Cliente getClienteById(Long id) {
+        return clienteRepositoryPort.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con id: " + id));
     }
 
-    @Override
-    public Optional<Cliente> getClienteById(Long id) {
-        return clienteRepositoryPort.findById(id);
+    // Actualizar un cliente existente
+    public Cliente actualizarCliente(Long id, CrearClienteRequest request) {
+        Cliente cliente = getClienteById(id);
+        ClienteMapper.updateEntity(cliente, request); // actualiza solo campos editables
+        cliente.setFechaModificacion(LocalDate.now());
+        return clienteRepositoryPort.save(cliente);
     }
 
-    @Override
+    // Eliminar un cliente
     public void deleteCliente(Long id) {
-        clienteRepositoryPort.findById(id).ifPresent(clienteRepositoryPort::delete);
+        Cliente cliente = getClienteById(id);
+        clienteRepositoryPort.delete(cliente);
+    }
+
+    // Listar todos los clientes
+    public List<Cliente> listarClientes() {
+        return clienteRepositoryPort.findAll();
     }
 }

@@ -1,14 +1,20 @@
 package com.example.demo.port.in;
 
-import com.example.demo.entity.Cliente;
-import java.util.List;
-import java.util.Optional;
+import com.example.demo.dto.ClienteResponse;
+import com.example.demo.dto.CrearClienteRequest;
 
+import java.util.List;
+	
 public interface ClienteUseCase {
 	
-    Cliente createCliente(Cliente cliente);
-    List<Cliente> getAllClientes();
-    Optional<Cliente> getClienteById(Long id);
-    void deleteCliente(Long id);
+	 ClienteResponse createCliente(CrearClienteRequest request);
+
+	 ClienteResponse getClienteById(Long id);
+
+	 ClienteResponse actualizarCliente(Long id, CrearClienteRequest request);
+
+	 void deleteCliente(Long id);
+
+	 List<ClienteResponse> listarClientes();
     
 }

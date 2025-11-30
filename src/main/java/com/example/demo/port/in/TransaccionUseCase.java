@@ -1,8 +1,17 @@
 package com.example.demo.port.in;
 
 
-import com.example.demo.entity.Transaccion;
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.example.demo.dto.CrearTransaccionRequest;
+import com.example.demo.dto.TransaccionResponse;
+
 
 public interface TransaccionUseCase {
-    Transaccion createTransaccion(Transaccion transaccion);
+    TransaccionResponse consignar(Long cuentaId, BigDecimal monto);
+    TransaccionResponse retirar(Long cuentaId, BigDecimal monto);
+    TransaccionResponse transferir(CrearTransaccionRequest request);
+    List<TransaccionResponse> listarMovimientos(Long cuentaId);
+    
 }

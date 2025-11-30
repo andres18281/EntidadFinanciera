@@ -1,18 +1,12 @@
-package com.example.demo.entity;
+package com.example.demo.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-@Table(name = "clientes")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Cliente {
-    @Id @GeneratedValue
+public class ClienteResponse {
+
     private Long id;
     private String tipoIdentificacion;
     private String numeroIdentificacion;
@@ -20,9 +14,9 @@ public class Cliente {
     private String apellidos;
     private String correo;
     private LocalDate fechaNacimiento;
+
     private LocalDate fechaCreacion;
     private LocalDate fechaModificacion;
 
-    @OneToMany(mappedBy = "cliente")
-    private List<Cuenta> cuentas;
+    private List<Long> cuentasIds; // solo ids para no devolver entidades completas
 }

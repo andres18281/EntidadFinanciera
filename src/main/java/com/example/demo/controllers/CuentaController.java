@@ -1,42 +1,54 @@
+package com.example.demo.controllers;
+
+import java.util.List;
+
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.dto.CrearCuentaRequest;
+import com.example.demo.dto.CuentaResponse;
+import com.example.demo.port.in.CuentaUseCase;
+
 
 @RestController
 @RequestMapping("/api/cuentas")
 public class CuentaController {
 
-    private final CuentaService cuentaService;
+    private final CuentaUseCase cuentaUseCase;
 
-    public CuentaController(CuentaService cuentaService) {
-        this.cuentaService = cuentaService;
+    public CuentaController(CuentaUseCase cuentaUseCase) {
+        this.cuentaUseCase = cuentaUseCase;
     }
 
     @PostMapping
-    public ResponseEntity<Cuenta> crearCuenta(@RequestBody CrearCuentaRequest request) {
-        Cuenta cuenta = cuentaService.crearCuenta(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(cuenta);
+    public ResponseEntity<CuentaResponse> crearCuenta(@RequestBody CrearCuentaRequest request) {
+    	CuentaResponse response = cuentaUseCase.createCuenta(request);
+    	return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Cuenta> obtenerCuenta(@PathVariable Long id) {
-        Cuenta cuenta = cuentaService.obtenerCuenta(id);
-        return ResponseEntity.ok(cuenta);
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<List<CuentaResponse>> obtenerCuentasPorCliente(@PathVariable Long clienteId) {
+        List<CuentaResponse> response  = cuentaUseCase.getCuentasByClienteId(clienteId);
+        return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Cuenta> actualizarCuenta(@PathVariable Long id, @RequestBody CrearCuentaRequest request) {
-        Cuenta cuenta = cuentaService.actualizarCuenta(id, request);
-        return ResponseEntity.ok(cuenta);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCuenta(@PathVariable Long id) {
-        cuentaService.eliminarCuenta(id);
+    @PatchMapping("/{id}/saldo")
+    public ResponseEntity<Void> actualizarSaldo(
+            @PathVariable Long id,
+            @RequestParam double monto
+    ) {
+        cuentaUseCase.actualizarSaldo(id, monto);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Cuenta>> listarCuentas() {
-        return ResponseEntity.ok(cuentaService.listarCuentas());
     }
 }

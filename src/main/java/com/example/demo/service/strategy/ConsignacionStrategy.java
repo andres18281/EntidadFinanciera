@@ -16,9 +16,22 @@ public class ConsignacionStrategy implements TransaccionStrategy {
     }
 
     @Override
+    public Transaccion.TipoTransaccion getTipo() {
+        return Transaccion.TipoTransaccion.CONSIGNACION;
+    }
+
+    @Override
     public void ejecutar(Transaccion transaccion) {
-        Cuenta cuentaOrigen = transaccion.getCuentaOrigen();
-        cuentaOrigen.setSaldo(cuentaOrigen.getSaldo().add(transaccion.getMonto()));
-        cuentaRepositoryPort.save(cuentaOrigen);
+        Cuenta cuentaDestino = transaccion.getCuentaDestino();
+
+        if (cuentaDestino == null) {
+            throw new RuntimeException("La consignación requiere una cuenta destino");
+        }
+
+        cuentaDestino.setSaldo(
+                cuentaDestino.getSaldo().add(transaccion.getMonto())
+        );
+
+        cuentaRepositoryPort.save(cuentaDestino);
     }
 }

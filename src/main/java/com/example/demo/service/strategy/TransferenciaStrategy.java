@@ -16,18 +16,33 @@ public class TransferenciaStrategy implements TransaccionStrategy {
     }
 
     @Override
+    public Transaccion.TipoTransaccion getTipo() {
+        return Transaccion.TipoTransaccion.TRANSFERENCIA;
+    }
+
+    @Override
     public void ejecutar(Transaccion transaccion) {
         Cuenta origen = transaccion.getCuentaOrigen();
         Cuenta destino = transaccion.getCuentaDestino();
+
+        if (origen == null || destino == null) {
+            throw new RuntimeException("La transferencia requiere cuentas origen y destino");
+        }
 
         if (origen.getSaldo().compareTo(transaccion.getMonto()) < 0) {
             throw new RuntimeException("Saldo insuficiente");
         }
 
-        origen.setSaldo(origen.getSaldo().subtract(transaccion.getMonto()));
-        destino.setSaldo(destino.getSaldo().add(transaccion.getMonto()));
+        origen.setSaldo(
+                origen.getSaldo().subtract(transaccion.getMonto())
+        );
+
+        destino.setSaldo(
+                destino.getSaldo().add(transaccion.getMonto())
+        );
 
         cuentaRepositoryPort.save(origen);
         cuentaRepositoryPort.save(destino);
     }
 }
+
